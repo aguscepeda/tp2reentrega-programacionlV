@@ -68,3 +68,28 @@ describe('PATCH /notes/:id (Ejercicio 4)', () => {
         expect(res.body.error).toBe('ValidationError');
     });
 });
+
+describe('DELETE /notes/:id (Ejercicio 5)', () => {
+    let app: ReturnType<typeof makeApp>;
+
+    beforeEach(() => {
+        app = makeApp(':memory:');
+    });
+
+    it('204 al eliminar y la nota deja de existir (GET → 404)', async () => {
+        const created = await request(app).post('/notes').send({ title: 'A', content: 'B' });
+
+        const res = await request(app).delete(`/notes/${created.body.id}`);
+        const after = await request(app).get(`/notes/${created.body.id}`);
+
+        expect(res.status).toBe(204);
+        expect(after.status).toBe(404);
+    });
+
+    it('404 si la nota no existe', async () => {
+        const res = await request(app).delete('/notes/999');
+
+        expect(res.status).toBe(404);
+        expect(res.body).toEqual({ error: 'NotFound' });
+    });
+});
