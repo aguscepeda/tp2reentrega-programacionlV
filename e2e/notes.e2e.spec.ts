@@ -38,3 +38,16 @@ test('happy path: crear, listar, leer, modificar y eliminar una nota', async ({ 
     const gone = await request.get(`/notes/${note.id}`);
     expect(gone.status()).toBe(404);
 });
+
+test('caso de error: id inexistente → 404 y body inválido → 400', async ({ request }) => {
+    const missing = await request.get('/notes/999999');
+    expect(missing.status()).toBe(404);
+    expect(await missing.json()).toEqual({ error: 'NotFound' });
+
+    const invalid = await request.post('/notes', { data: { title: '', content: 'sin título' } });
+    expect(invalid.status()).toBe(400);
+    expect((await invalid.json()).error).toBe('ValidationError');
+
+    const listed = await (await request.get('/notes')).json();
+    expect(listed).toHaveLength(2);
+});
