@@ -30,3 +30,41 @@ describe('GET /notes/:id (Ejercicio 3)', () => {
         expect(res.body).toEqual({ error: 'NotFound' });
     });
 });
+
+describe('PATCH /notes/:id (Ejercicio 4)', () => {
+    let app: ReturnType<typeof makeApp>;
+
+    beforeEach(() => {
+        app = makeApp(':memory:');
+    });
+
+    it('200 y modifica solo los campos enviados', async () => {
+        const created = await request(app)
+            .post('/notes')
+            .send({ title: 'Comprar pan', content: 'Antes de las 20hs' });
+
+        const res = await request(app)
+            .patch(`/notes/${created.body.id}`)
+            .send({ content: 'Antes de las 21hs' });
+
+        expect(res.status).toBe(200);
+        expect(res.body.title).toBe('Comprar pan');
+        expect(res.body.content).toBe('Antes de las 21hs');
+    });
+
+    it('404 si la nota no existe', async () => {
+        const res = await request(app).patch('/notes/999').send({ title: 'X' });
+
+        expect(res.status).toBe(404);
+        expect(res.body).toEqual({ error: 'NotFound' });
+    });
+
+    it('400 si el body es inválido (title vacío)', async () => {
+        const created = await request(app).post('/notes').send({ title: 'A', content: 'B' });
+
+        const res = await request(app).patch(`/notes/${created.body.id}`).send({ title: '' });
+
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBe('ValidationError');
+    });
+});
