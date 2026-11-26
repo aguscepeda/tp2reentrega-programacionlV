@@ -10,6 +10,7 @@ export interface NoteService {
   getNote(id: number): Note | undefined;
   updateNote(id: number, patch: NotePatch): Note | undefined;
   deleteNote(id: number): boolean;
+  searchNotes(query: string): Note[];
 }
 
 export class NoteServiceImpl implements NoteService {
@@ -53,5 +54,12 @@ export class NoteServiceImpl implements NoteService {
   deleteNote(id: number): boolean {
     // 🔴🟢 EJERCICIO 5: ciclo completo.
     return this.repo.delete(id);
+  }
+
+  searchNotes(query: string): Note[] {
+    const q = query.toLowerCase();
+    return this.repo.findAll().filter(
+      n => n.title.toLowerCase().includes(q) || n.content.toLowerCase().includes(q)
+    );
   }
 }
