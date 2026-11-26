@@ -64,4 +64,13 @@ export class NoteController {
     if (!ok) return res.status(404).json({ error: 'NotFound' });
     res.status(204).send();
   };
+
+  togglePin = (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const updated = this.service.togglePin(id);
+
+  if (!updated) return res.status(404).json({ error: 'NotFound' });
+
+  res.json(updated);
+  };
 }
