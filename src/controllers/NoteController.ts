@@ -14,6 +14,10 @@ const createSchema = z.object({
 
 const patchSchema = createSchema.partial();
 
+const listQuerySchema = z.object({
+  q: z.string().optional()
+});
+
 export class NoteController {
   constructor(private readonly service: NoteService) {}
 
@@ -27,8 +31,12 @@ export class NoteController {
   };
 
   list = (req: Request, res: Response) => {
-    const q = req.query.q;
-    if (typeof q === 'string' && q !== '') return res.json(this.service.searchNotes(q));
+    const parsed = listQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      return res.status(400).json({ error: 'ValidationError', details: parsed.error.flatten() });
+    }
+    const { q } = parsed.data;
+    if (q) return res.json(this.service.searchNotes(q));
     res.json(this.service.listNotes());
   };
 
