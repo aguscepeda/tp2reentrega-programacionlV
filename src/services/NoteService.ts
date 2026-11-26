@@ -14,6 +14,7 @@ export interface NoteService {
   updateNote(id: number, patch: NotePatch): Note | undefined;
   deleteNote(id: number): boolean;
   searchNotes(query: string): Note[];
+  togglePin(id: number): Note | undefined;
 }
 
 export class NoteServiceImpl implements NoteService {
@@ -62,5 +63,19 @@ export class NoteServiceImpl implements NoteService {
   searchNotes(query: string): Note[] {
     const q = query.toLowerCase();
     return this.repo.findAll().filter(n => matches(n, q));
+  }
+
+  togglePin(id: number): Note | undefined {
+  const note = this.repo.findById(id);
+
+  if (!note) return undefined;
+
+  const updated = this.repo.update(id, {
+    pinned: !note.pinned
+  });
+
+  if (updated?.pinned) notify(updated);
+
+  return updated;
   }
 }
