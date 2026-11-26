@@ -20,6 +20,12 @@ export interface NoteService {
 export class NoteServiceImpl implements NoteService {
   constructor(private readonly repo: NoteRepository) { }
 
+  private notifyIfPinned(note: Note): void {
+  if (note.pinned) {
+    notify(note);
+  }
+  }
+
   createNote(data: NewNote): Note {
     // 🔴 EJERCICIO 1 (dado en rojo en tests/unit/noteService.create.test.ts)
     // Implementen la creación básica: crear la nota en el repositorio y
@@ -31,9 +37,7 @@ export class NoteServiceImpl implements NoteService {
     // notificationService. En el test, simulen ese módulo completo con
     // vi.mock y verifiquen la llamada con toHaveBeenCalledWith.
     const note = this.repo.create(data);
-    if (data.pinned) {
-      notify(note);
-    }
+    this.notifyIfPinned(note);
     return note;
   }
 
@@ -74,7 +78,7 @@ export class NoteServiceImpl implements NoteService {
     pinned: !note.pinned
   });
 
-  if (updated?.pinned) notify(updated);
+  if (updated) this.notifyIfPinned(updated);
 
   return updated;
   }
