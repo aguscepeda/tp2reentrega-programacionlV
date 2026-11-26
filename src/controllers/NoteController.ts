@@ -26,7 +26,9 @@ export class NoteController {
     res.status(201).json(note);
   };
 
-  list = (_req: Request, res: Response) => {
+  list = (req: Request, res: Response) => {
+    const q = req.query.q;
+    if (typeof q === 'string' && q !== '') return res.json(this.service.searchNotes(q));
     res.json(this.service.listNotes());
   };
 
