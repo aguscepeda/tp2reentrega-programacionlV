@@ -2,6 +2,9 @@ import { NoteRepository } from '../repositories/NoteRepository';
 import { Note, NewNote, NotePatch } from '../models/Note';
 import { notify } from './notificationService';
 
+const matches = (note: Note, q: string) =>
+  [note.title, note.content].some(t => t.toLowerCase().includes(q));
+
 // Contrato fijo. Las rutas (src/routes/notes.ts) y los tests de la cátedra
 // llaman a estos 5 métodos por su nombre exacto: no los renombren.
 export interface NoteService {
@@ -10,6 +13,7 @@ export interface NoteService {
   getNote(id: number): Note | undefined;
   updateNote(id: number, patch: NotePatch): Note | undefined;
   deleteNote(id: number): boolean;
+  searchNotes(query: string): Note[];
 }
 
 export class NoteServiceImpl implements NoteService {
@@ -53,5 +57,10 @@ export class NoteServiceImpl implements NoteService {
   deleteNote(id: number): boolean {
     // 🔴🟢 EJERCICIO 5: ciclo completo.
     return this.repo.delete(id);
+  }
+
+  searchNotes(query: string): Note[] {
+    const q = query.toLowerCase();
+    return this.repo.findAll().filter(n => matches(n, q));
   }
 }
