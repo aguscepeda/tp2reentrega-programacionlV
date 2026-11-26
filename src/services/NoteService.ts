@@ -14,10 +14,17 @@ export interface NoteService {
   updateNote(id: number, patch: NotePatch): Note | undefined;
   deleteNote(id: number): boolean;
   searchNotes(query: string): Note[];
+  togglePin(id: number): Note | undefined;
 }
 
 export class NoteServiceImpl implements NoteService {
   constructor(private readonly repo: NoteRepository) { }
+
+  private notifyIfPinned(note: Note): void {
+  if (note.pinned) {
+    notify(note);
+  }
+  }
 
   createNote(data: NewNote): Note {
     // 🔴 EJERCICIO 1 (dado en rojo en tests/unit/noteService.create.test.ts)
@@ -30,9 +37,7 @@ export class NoteServiceImpl implements NoteService {
     // notificationService. En el test, simulen ese módulo completo con
     // vi.mock y verifiquen la llamada con toHaveBeenCalledWith.
     const note = this.repo.create(data);
-    if (data.pinned) {
-      notify(note);
-    }
+    this.notifyIfPinned(note);
     return note;
   }
 
@@ -62,5 +67,19 @@ export class NoteServiceImpl implements NoteService {
   searchNotes(query: string): Note[] {
     const q = query.toLowerCase();
     return this.repo.findAll().filter(n => matches(n, q));
+  }
+
+  togglePin(id: number): Note | undefined {
+  const note = this.repo.findById(id);
+
+  if (!note) return undefined;
+
+  const updated = this.repo.update(id, {
+    pinned: !note.pinned
+  });
+
+  if (updated) this.notifyIfPinned(updated);
+
+  return updated;
   }
 }

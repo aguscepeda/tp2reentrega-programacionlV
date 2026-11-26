@@ -24,6 +24,7 @@ export function makeNotesRouter(service: NoteService) {
   router.get('/:id', controller.getById);
   router.patch('/:id', controller.update);
   router.delete('/:id', controller.remove);
+  router.post('/:id/pin', controller.togglePin);
 
   return router;
 }

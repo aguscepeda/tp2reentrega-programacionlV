@@ -18,6 +18,10 @@ const listQuerySchema = z.object({
   q: z.string().optional()
 });
 
+const parseId = (req: Request): number => {
+  return Number(req.params.id);
+};
+
 export class NoteController {
   constructor(private readonly service: NoteService) {}
 
@@ -41,14 +45,14 @@ export class NoteController {
   };
 
   getById = (req: Request, res: Response) => {
-    const id = Number(req.params.id);
+    const id = parseId(req);
     const note = this.service.getNote(id);
     if (!note) return res.status(404).json({ error: 'NotFound' });
     res.json(note);
   };
 
   update = (req: Request, res: Response) => {
-    const id = Number(req.params.id);
+    const id = parseId(req);
     const parsed = patchSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: 'ValidationError', details: parsed.error.flatten() });
@@ -59,9 +63,18 @@ export class NoteController {
   };
 
   remove = (req: Request, res: Response) => {
-    const id = Number(req.params.id);
+    const id = parseId(req);
     const ok = this.service.deleteNote(id);
     if (!ok) return res.status(404).json({ error: 'NotFound' });
     res.status(204).send();
+  };
+
+  togglePin = (req: Request, res: Response) => {
+  const id = parseId(req);
+  const updated = this.service.togglePin(id);
+
+  if (!updated) return res.status(404).json({ error: 'NotFound' });
+
+  res.json(updated);
   };
 }
