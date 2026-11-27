@@ -77,4 +77,8 @@ export class NoteController {
 
   res.json(updated);
   };
+
+  stats = (_req: Request, res: Response) => {
+    res.json(this.service.getStats());
+  };
 }

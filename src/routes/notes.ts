@@ -5,6 +5,7 @@ import { NoteController } from '../controllers/NoteController';
 // Contrato HTTP fijo (no lo cambien):
 //   POST   /notes
 //   GET    /notes
+//   GET    /notes/stats
 //   GET    /notes/:id
 //   PATCH  /notes/:id
 //   DELETE /notes/:id
@@ -21,6 +22,7 @@ export function makeNotesRouter(service: NoteService) {
 
   router.post('/', controller.create);
   router.get('/', controller.list);
+  router.get('/stats', controller.stats);
   router.get('/:id', controller.getById);
   router.patch('/:id', controller.update);
   router.delete('/:id', controller.remove);

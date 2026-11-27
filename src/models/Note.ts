@@ -21,3 +21,8 @@ export interface NotePatch {
   content?: string;
   pinned?: boolean;
 }
+
+export interface NoteStats {
+  total: number;
+  pinned: number;
+}
