@@ -15,6 +15,7 @@ export interface NoteService {
   deleteNote(id: number): boolean;
   searchNotes(query: string): Note[];
   togglePin(id: number): Note | undefined;
+  getStats(): { total: number; pinned: number };
 }
 
 export class NoteServiceImpl implements NoteService {
@@ -81,5 +82,10 @@ export class NoteServiceImpl implements NoteService {
   if (updated) this.notifyIfPinned(updated);
 
   return updated;
+  }
+
+  getStats() {
+    const notes = this.repo.findAll();
+    return { total: notes.length, pinned: notes.filter(n => n.pinned).length };
   }
 }
