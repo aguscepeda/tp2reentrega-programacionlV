@@ -21,6 +21,7 @@ export function makeNotesRouter(service: NoteService) {
 
   router.post('/', controller.create);
   router.get('/', controller.list);
+  router.get('/stats', controller.stats);
   router.get('/:id', controller.getById);
   router.patch('/:id', controller.update);
   router.delete('/:id', controller.remove);
