@@ -5,6 +5,7 @@ import { NoteController } from '../controllers/NoteController';
 // Contrato HTTP fijo (no lo cambien):
 //   POST   /notes
 //   GET    /notes
+//   GET    /notes/stats
 //   GET    /notes/:id
 //   PATCH  /notes/:id
 //   DELETE /notes/:id
